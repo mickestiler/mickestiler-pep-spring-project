@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Account;
+import com.example.exception.DuplicateUsernameException;
 import com.example.service.AccountService;
 
 /**
@@ -21,26 +22,25 @@ import com.example.service.AccountService;
 @RestController
 public class SocialMediaController {
 
-    @Autowired
     AccountService accountService;
+
+    @Autowired
+    public SocialMediaController(AccountService accountService) {
+        this.accountService = accountService;
+    }
     @PostMapping("/register")
     public ResponseEntity<Account> postUser(@RequestBody Account account) {
         Account createdAccount = accountService.registerAccount(account);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdAccount);
+        return ResponseEntity.status(HttpStatus.OK).body(createdAccount);
     }
 
-    // Handle IllegalArgumentException (for validation errors)
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
-    // Handle DuplicateUsernameException (for duplicate username conflict)
     @ExceptionHandler(DuplicateUsernameException.class)
     public ResponseEntity<String> handleDuplicateUsername(DuplicateUsernameException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
-
-    @PostMapping("/login")
-    public Account 
 }
