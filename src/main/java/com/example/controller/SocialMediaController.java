@@ -76,17 +76,17 @@ public class SocialMediaController {
     }
 
     @PatchMapping("/messages/{message_id}")
-    public ResponseEntity<Integer> patchMessage(@PathVariable int message_id, @RequestBody String messageText) {
+    public ResponseEntity<Integer> patchMessage(@PathVariable int message_id, @RequestBody Message message) {
+        String messageText = message.getMessageText();
         int rowsAffected = messageService.updateMessage(message_id, messageText);
+    
         return ResponseEntity.status(HttpStatus.OK).body(rowsAffected);
     }
+    
 
     @GetMapping("/accounts/{account_id}/messages")
     public ResponseEntity<List<Message>> getMessagesGivenAccountId(@PathVariable int account_id) {
         List<Message> messagesGivenAccountId = messageService.getAllMessagesGivenId(account_id);
-        if (messagesGivenAccountId != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(messagesGivenAccountId);
-        }
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body(messagesGivenAccountId);
     }
 }
