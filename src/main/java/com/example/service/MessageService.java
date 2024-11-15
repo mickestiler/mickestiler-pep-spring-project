@@ -1,5 +1,6 @@
 package com.example.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,12 +32,9 @@ public class MessageService {
         return messageRepository.findAll();
     }
 
-    public Message getOneMessage(int message_id) {
+    public Optional<Message> getOneMessage(int message_id) {
         Optional<Message> oneMessage = messageRepository.findById(message_id);
-        if (oneMessage.isPresent()) {
-            return oneMessage.get();
-        }
-        return null;
+        return oneMessage;
     }
 
     public int deleteMessage(int message_id) {
@@ -62,7 +60,7 @@ public class MessageService {
         if (accountRepository.findById(account_id).isPresent()) {
             return messageRepository.findAllByPostedBy(account_id);
         }
-        return null;
+        return Collections.emptyList();
     }
     
 }

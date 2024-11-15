@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,8 +63,11 @@ public class SocialMediaController {
 
     @GetMapping("/messages/{message_id}")
     public ResponseEntity<Message> getOneMessage(@PathVariable int message_id) {
-        Message oneMessage = messageService.getOneMessage(message_id);
-        return ResponseEntity.status(HttpStatus.OK).body(oneMessage);
+        Optional<Message> oneMessage = messageService.getOneMessage(message_id);
+        if (oneMessage.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(oneMessage.get());
+        }
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/messages/{message_id}")
