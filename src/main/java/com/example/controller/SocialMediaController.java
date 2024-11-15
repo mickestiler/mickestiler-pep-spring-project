@@ -5,8 +5,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Account;
 import com.example.entity.Message;
-import com.example.exception.DuplicateUsernameException;
 import com.example.service.AccountService;
 import com.example.service.MessageService;
 
@@ -67,5 +67,26 @@ public class SocialMediaController {
     }
 
     @DeleteMapping("/messages/{message_id}")
-    public ResponseEntity
+    public ResponseEntity<Integer> deleteMessage(@PathVariable int message_id) {
+        int rowsAffected = messageService.deleteMessage(message_id);
+        if (rowsAffected > 0) {
+            return ResponseEntity.status(HttpStatus.OK).body(rowsAffected);
+        }
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PatchMapping("/messages/{message_id}")
+    public ResponseEntity<Integer> patchMessage(@PathVariable int message_id, @RequestBody String messageText) {
+        int rowsAffected = messageService.updateMessage(message_id, messageText);
+        return ResponseEntity.status(HttpStatus.OK).body(rowsAffected);
+    }
+
+    @GetMapping("/accounts/{account_id}/messages")
+    public ResponseEntity<List<Message>> getMessagesGivenAccountId(@PathVariable int account_id) {
+        List<Message> messagesGivenAccountId = messageService.getAllMessagesGivenId(account_id);
+        if (messagesGivenAccountId != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(messagesGivenAccountId);
+        }
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }
