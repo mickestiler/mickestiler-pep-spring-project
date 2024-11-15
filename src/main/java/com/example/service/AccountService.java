@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.entity.Account;
 import com.example.exception.DuplicateUsernameException;
+import com.example.exception.UnauthorizedException;
 import com.example.repository.AccountRepository;
 @Service
 public class AccountService {
@@ -29,4 +30,14 @@ public class AccountService {
         }
         return accountRepository.save(account);
     }
+
+    public Account login(Account account) {
+        Optional<Account> loginAccount = accountRepository.findByUsername(account.getUsername());
+        if (loginAccount.isPresent() && loginAccount.get().getPassword().equals(account.getPassword())) {
+                return loginAccount.get();
+        } else {
+            throw new UnauthorizedException("credentials do not match!");
+        }
+    }
+
 }

@@ -1,17 +1,22 @@
 package com.example.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Account;
+import com.example.entity.Message;
 import com.example.exception.DuplicateUsernameException;
 import com.example.service.AccountService;
+import com.example.service.MessageService;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
@@ -23,24 +28,44 @@ import com.example.service.AccountService;
 public class SocialMediaController {
 
     AccountService accountService;
+    MessageService messageService;
 
     @Autowired
-    public SocialMediaController(AccountService accountService) {
+    public SocialMediaController(AccountService accountService, MessageService messageService) {
         this.accountService = accountService;
+        this.messageService = messageService;
     }
+
     @PostMapping("/register")
     public ResponseEntity<Account> postUser(@RequestBody Account account) {
         Account createdAccount = accountService.registerAccount(account);
         return ResponseEntity.status(HttpStatus.OK).body(createdAccount);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    @PostMapping("/login")
+    public ResponseEntity<Account> postLogin(@RequestBody Account account) {
+         Account loginAccount = accountService.login(account);
+         return ResponseEntity.status(HttpStatus.OK).body(loginAccount);
     }
 
-    @ExceptionHandler(DuplicateUsernameException.class)
-    public ResponseEntity<String> handleDuplicateUsername(DuplicateUsernameException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    @PostMapping("/messages")
+    public ResponseEntity<Message> postMessage(@RequestBody Message message) {
+        Message createdMessage = messageService.createMessage(message);
+        return ResponseEntity.status(HttpStatus.OK).body(createdMessage);
     }
+
+    @GetMapping("/messages")
+    public ResponseEntity<List<Message>> getAllMessages() {
+        List<Message> allMessages = messageService.getAllMessages();
+        return ResponseEntity.status(HttpStatus.OK).body(allMessages);
+    }
+
+    @GetMapping("/messages/{message_id}")
+    public ResponseEntity<Message> getOneMessage(@PathVariable int message_id) {
+        Message oneMessage = messageService.getOneMessage(message_id);
+        return ResponseEntity.status(HttpStatus.OK).body(oneMessage);
+    }
+
+    @DeleteMapping("/messages/{message_id}")
+    public ResponseEntity
 }
